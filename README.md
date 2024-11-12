@@ -9,6 +9,8 @@ This project implements a graph-based spatial weight matrix (SWM) approach to im
 
 ```plaintext
 GraphBasedSpatialWeightMatrices/
+├── article/
+│   └── Song, Y., & Cibin, A. (2024). Optimizing Spatial Weight Matrices in Spatial Econometrics A Graph-Theoretic Approach Based on Shortest Path Algorithms. I
 ├── data/ (External Link)
 │   └── [Google Drive Data Folder](https://drive.google.com/drive/folders/1ps9J-7VWHT5K7ePWXEboW1x9wvuQdGb2?usp=sharing)
 ├── notebooks/
@@ -28,8 +30,7 @@ GraphBasedSpatialWeightMatrices/
 │   ├── spatial_weights.py
 │   └── utils.py
 ├── requirements.txt
-├── README.md
-└── Song_Y_Cibin_A_2024_Optimizing_Spatial_Weight_Matrices.pdf
+└── README.md
 ```
 
 ## Installation
