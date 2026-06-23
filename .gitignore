@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and environment
+*.log
+.env
+
+# Generated outputs and local data
+data/
+datasets/
+output/
+outputs/
+results/
+runs/
+wandb/
+mlruns/
+Layout/
+updated_cd_matrix_normalized.csv
+
+# Model artifacts
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.onnx
+
+# OS and editor
+.DS_Store
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+node_modules/

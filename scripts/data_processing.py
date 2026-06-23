@@ -1,13 +1,13 @@
-import geopandas as gpd
+from pathlib import Path
+import sys
 
 
-def load_geodata (cd_path, sc_path):
-    """Loads and aligns Community Districts (CD) and Street Centerline (SC) shapefiles."""
-    cd = gpd.read_file(cd_path)
-    sc = gpd.read_file(sc_path)
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
-    # Align CRS
-    if cd.crs != sc.crs:
-        sc = sc.to_crs(cd.crs)
+from graph_spatial_weights import load_geodata
 
-    return cd, sc
+
+__all__ = ["load_geodata"]

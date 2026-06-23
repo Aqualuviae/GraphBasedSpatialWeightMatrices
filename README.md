@@ -1,79 +1,127 @@
+# graph-based-spatial-weights
 
-# Graph-Based Spatial Weight Matrices (GBSWM) Project
+Python toolkit for constructing graph-based spatial weight matrices from urban street networks and administrative districts.
 
-## Project Overview
+This repository supports the workflow described in *Optimizing Spatial Weight Matrices in Spatial Econometrics: A Graph-Theoretic Approach Based on Shortest Path Algorithms* by Y. Song and A. Cibin (2024). It turns street-district intersections into a graph, normalizes direct district connections, and can fill non-adjacent district weights using shortest-path products.
 
-This project implements a graph-based spatial weight matrix (SWM) approach to improve the accuracy of spatial econometric models in urban studies. Using shortest path algorithms on urban street networks, the graph-based SWM aims to capture spatial interactions more effectively compared to traditional distance-based SWMs. The methodology and implementation are detailed in the paper "Optimizing Spatial Weight Matrices in Spatial Econometrics: A Graph-Theoretic Approach Based on Shortest Path Algorithms" by Y. Song and A. Cibin (2024), which is included in the project directory.
+## Method Overview
+
+The implemented workflow is:
+
+1. Load administrative districts and street centerlines.
+2. Align coordinate reference systems.
+3. Select streets intersecting district boundaries.
+4. Buffer selected streets by a configurable distance.
+5. Count district pairs touched by each buffered street segment.
+6. Normalize direct connection counts into a spatial weight matrix.
+7. Optionally fill non-adjacent pairs using products along graph shortest paths.
+
+## Installation
+
+```bash
+git clone git@github.com:Aqualuviae/graph-based-spatial-weights.git
+cd graph-based-spatial-weights
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[test]"
+```
+
+For notebook-based analysis, install the same environment and open `notebooks/graph_based_spatial_weights.ipynb`.
+
+## Data
+
+The original project data is not tracked in Git because it contains local geospatial files and derived analysis outputs.
+
+Download the data from the external folder:
+
+- [Google Drive Data Folder](https://drive.google.com/drive/folders/1ps9J-7VWHT5K7ePWXEboW1x9wvuQdGb2?usp=sharing)
+
+Place downloaded files under a local `data/` folder. The default examples expect:
+
+```text
+data/
+├── CommunityDistrict/
+│   └── nycd.shp
+└── StreetCenterline/
+    └── geo_export_5271be70-8d47-4770-8855-7a022145252c.shp
+```
+
+## CLI Usage
+
+Build a graph-based spatial weight matrix:
+
+```bash
+graph-spatial-weights build ^
+  --districts data/CommunityDistrict/nycd.shp ^
+  --streets data/StreetCenterline/geo_export_5271be70-8d47-4770-8855-7a022145252c.shp ^
+  --district-id BoroCD ^
+  --buffer-distance 5 ^
+  --output outputs/spatial_weights.csv
+```
+
+The compatibility script calls the same CLI:
+
+```bash
+python scripts/main.py build --districts <districts-path> --streets <streets-path> --output outputs/spatial_weights.csv
+```
+
+## Python API
+
+```python
+from graph_spatial_weights import (
+    build_graph_spatial_weights,
+    dataframe_to_libpysal_weights,
+    load_geodata,
+)
+
+districts, streets = load_geodata(
+    "data/CommunityDistrict/nycd.shp",
+    "data/StreetCenterline/geo_export_5271be70-8d47-4770-8855-7a022145252c.shp",
+)
+
+matrix = build_graph_spatial_weights(
+    districts,
+    streets,
+    district_id_col="BoroCD",
+    buffer_distance=5,
+)
+
+w = dataframe_to_libpysal_weights(matrix)
+```
 
 ## Project Structure
 
-```plaintext
-GraphBasedSpatialWeightMatrices/
+```text
+graph-based-spatial-weights/
 ├── article/
-│   └── Song, Y., & Cibin, A. (2024). Optimizing Spatial Weight Matrices in Spatial Econometrics A Graph-Theoretic Approach Based on Shortest Path Algorithms. I
-├── data/ (External Link)
-│   └── [Google Drive Data Folder](https://drive.google.com/drive/folders/1ps9J-7VWHT5K7ePWXEboW1x9wvuQdGb2?usp=sharing)
+│   └── graph-based-spatial-weights.pdf
 ├── notebooks/
-│   └── Graph-Based Spatial Weight Matrices.ipynb
-├── output/
-│   ├── Complaint_Correlation_Matrix.png
-│   ├── Flowcharts.png
-│   ├── NYC_Community_District_and_Road_Network_Map.png
-│   ├── Shooting_Correlation_Matrix.png
-│   ├── Summons_Correlation_Matrix.png
-│   ├── Weighted_Network_Graph_1.png
-│   └── Weighted_Network_Graph_2.png
+│   └── graph_based_spatial_weights.ipynb
 ├── scripts/
-│   ├── __init__.py
 │   ├── main.py
-│   ├── data_loading.py
+│   ├── data_processing.py
 │   ├── spatial_weights.py
 │   └── utils.py
+├── src/
+│   └── graph_spatial_weights/
+├── tests/
+├── pyproject.toml
 ├── requirements.txt
 └── README.md
 ```
 
-## Installation
+Generated files should be written to `outputs/`, which is ignored by Git.
 
-1. **Clone the repository**:
+## Testing
 
-   ```bash
-   git clone https://github.com/Aqualuviae/GraphBasedSpatialWeightMatrices.git
-   cd GraphBasedSpatialWeightMatrices
-   ```
+```bash
+python -m compileall src scripts
+pytest
+```
 
-2. **Install dependencies**:
+Tests use small synthetic geometries instead of the original research data.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+## Citation
 
-## Usage
-
-To run the project, execute the `main.py` script:
-
-   ```bash
-   python scripts/main.py
-   ```
-
-This script performs the following steps:
-1. Loads and aligns spatial data from the provided data files (downloaded separately from the Google Drive link).
-2. Generates a graph-based spatial weight matrix (GBSWM) based on the specified method.
-3. Saves the output results, including figures and matrices, in the `output/` directory.
-
-## Data Sources
-
-The data required for this project is available for download from the following link:
-- **[Google Drive Data Folder](https://drive.google.com/drive/folders/1ps9J-7VWHT5K7ePWXEboW1x9wvuQdGb2?usp=sharing)**
-
-Download the contents and place them in a local `data/` folder at the root of this project.
-
-## Results
-
-Output files are saved in the `output/` directory and include:
-- **Correlation Matrices**: Visual correlation matrices for different incident types, such as complaints, shootings, and summonses.
-- **Network Graphs**: Visualizations of the generated weighted network graphs, which illustrate spatial relationships.
-
-## Reference
-
-- **Song, Y., & Cibin, A.** (2024). *Optimizing Spatial Weight Matrices in Spatial Econometrics: A Graph-Theoretic Approach Based on Shortest Path Algorithms*. International Review for Spatial Planning and Sustainable Development.
+Song, Y., & Cibin, A. (2024). *Optimizing Spatial Weight Matrices in Spatial Econometrics: A Graph-Theoretic Approach Based on Shortest Path Algorithms*. International Review for Spatial Planning and Sustainable Development.
